@@ -5,8 +5,9 @@ namespace App\Http\Dao;
 use App\Http\Dto\ApiOutResponse;
 use App\Http\Dto\LineChartResponse;
 use DB;
+// use Illuminate\Support\Facades\DB;
 
-class DashBoardDao
+class UbigeoDao
 {
     public function lineChart($req)
     {
