@@ -1,10 +1,14 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { Inscripcion } from '../../models/inscripcion';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RegistroService } from '../../services/registro.service';
 import { ValidationService } from 'src/app/core/services/validation.service';
 import { DatePipe } from '@angular/common';
+import { UbigeoService } from '../../services/ubigeo.service';
+import { ApiOutResponse } from '../../dto/response/ApiOutReponse';
+import { InscripcionRequest } from '../../dto/request/InscripcionRequest';
+import { ProvinciaRequest } from '../../dto/request/ProvinciaRequest';
+import { DistritoRequest } from '../../dto/request/DistritoRequest';
 
 @Component({
   selector: 'app-registro',
@@ -12,7 +16,7 @@ import { DatePipe } from '@angular/common';
   styleUrls: ['./registro.component.scss']
 })
 export class RegistroComponent implements OnInit {
-  inscripcion: Inscripcion;
+  inscripcion: InscripcionRequest;
   formularioGrp: FormGroup;
 
   listaDepartamento: any[];
@@ -68,6 +72,7 @@ export class RegistroComponent implements OnInit {
     private router: Router,
     private datePipe: DatePipe,
     @Inject(RegistroService) private registroService: RegistroService,
+    @Inject(UbigeoService) private ubigeoService: UbigeoService,
     @Inject(ValidationService) private validationService: ValidationService,
   ) { }
 
@@ -82,21 +87,87 @@ export class RegistroComponent implements OnInit {
       departamento: ['', [Validators.required]],
       provincia: ['', [Validators.required]],
       distrito: ['', [Validators.required]],
-      fechaInscripcion: ['', [Validators.required]],
+      fechaInscripcion: [{ value: '', disabled: true }, [Validators.required]],
     });
 
     this.formularioGrp.get('fechaInscripcion').setValue(new Date(this.datePipe.transform(new Date(), 'MM/dd/yyyy')));
     console.log(this.formularioGrp.get('fechaInscripcion').value);
+
+    this.inicializarVariables();
+  }
+
+  inicializarVariables(): void {
+    this.comboDepartamento();
   }
 
   comboDepartamento(): void {
+    this.ubigeoService.listarDepartamento().subscribe(
+      (data: ApiOutResponse) => {
+        console.log(data);
+        if (data.rCodigo === 1) {
+          this.listaDepartamento = data.result;
+          this.listaDepartamento.unshift({ id: 0, nombre: 'NO DEFINIDO' });
+          this.formularioGrp.get('departamento').setValue(this.listaDepartamento[0]);
+
+          this.comboProvincia();
+        } else {
+          this.listaDepartamento = [];
+          this.listaDepartamento.unshift({ id: 0, nombre: 'NO DEFINIDO' });
+          this.formularioGrp.get('departamento').setValue(this.listaDepartamento[0]);
+
+          this.comboProvincia();
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   comboProvincia(): void {
+    let req: ProvinciaRequest = { idDepartamento: this.formularioGrp.get('departamento').value.id };
+
+    this.ubigeoService.listarProvincia(req).subscribe(
+      (data: ApiOutResponse) => {
+        if (data.rCodigo == 1) {
+          this.listaProvincia = data.result;
+          this.listaProvincia.unshift({ id: 0, nombre: 'NO DEFINIDO' });
+          this.formularioGrp.get('provincia').setValue(this.listaProvincia[0]);
+
+          this.comboDistrito();
+        } else {
+          this.listaProvincia = [];
+          this.listaProvincia.unshift({ id: 0, nombre: 'NO DEFINIDO' });
+          this.formularioGrp.get('provincia').setValue(this.listaProvincia[0]);
+
+          this.comboDistrito();
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   comboDistrito(): void {
+    let req: DistritoRequest = { idProvincia: this.formularioGrp.get('provincia').value.id };
 
+    this.ubigeoService.listarDistrito(req).subscribe(
+      (data: ApiOutResponse) => {
+        if (data.rCodigo == 1) {
+          this.listaDistrito = data.result;
+          this.listaDistrito.unshift({ id: 0, nombre: 'NO DEFINIDO' });
+          this.formularioGrp.get('distrito').setValue(this.listaDistrito[0]);
+        } else {
+          this.listaDistrito = [];
+          this.listaDistrito.unshift({ id: 0, nombre: 'NO DEFINIDO' });
+          this.formularioGrp.get('distrito').setValue(this.listaDistrito[0]);
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   registrar() {

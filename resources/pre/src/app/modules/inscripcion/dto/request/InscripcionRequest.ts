@@ -1,4 +1,4 @@
-export interface Inscripcion {
+export interface InscripcionRequest {
     id: number;
     dni: string;
     nombre: string;
