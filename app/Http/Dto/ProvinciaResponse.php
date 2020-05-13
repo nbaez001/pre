@@ -2,9 +2,10 @@
 
 namespace App\Http\Dto;
 
-class DepartamentoResponse
+class ProvinciaResponse
 {
     public $id;
+    public $idDepartamento;
     public $nombre;
     public $ubigeo;
     public $ubigeoReniec;
@@ -85,6 +86,26 @@ class DepartamentoResponse
     public function setUbigeoReniec($ubigeoReniec)
     {
         $this->ubigeoReniec = $ubigeoReniec;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of idDepartamento
+     */
+    public function getIdDepartamento()
+    {
+        return $this->idDepartamento;
+    }
+
+    /**
+     * Set the value of idDepartamento
+     *
+     * @return  self
+     */
+    public function setIdDepartamento($idDepartamento)
+    {
+        $this->idDepartamento = $idDepartamento;
 
         return $this;
     }

@@ -8,6 +8,13 @@ class ApiOutResponse
     public $rMensaje;
     public $result;
 
+    public function __construct($rCodigo, $rMensaje, $result)
+    {
+        $this->rCodigo = $rCodigo;
+        $this->rMensaje = $rMensaje;
+        $this->result = $result;
+    }
+
     /**
      * Get the value of rCodigo
      */
