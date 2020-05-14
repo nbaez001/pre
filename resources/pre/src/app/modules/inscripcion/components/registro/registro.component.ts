@@ -9,6 +9,11 @@ import { ApiOutResponse } from '../../dto/response/ApiOutReponse';
 import { InscripcionRequest } from '../../dto/request/InscripcionRequest';
 import { ProvinciaRequest } from '../../dto/request/ProvinciaRequest';
 import { DistritoRequest } from '../../dto/request/DistritoRequest';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmacionComponent } from './confirmacion/confirmacion.component';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-registro',
@@ -25,7 +30,8 @@ export class RegistroComponent implements OnInit {
 
   messages = {
     'dni': {
-      'required': 'El campo es obligatorio'
+      'required': 'El campo es obligatorio',
+      'maxlength': 'Cantidad maximo de digitos es 8'
     },
     'nombre': {
       'required': 'El campo es obligatorio'
@@ -37,7 +43,12 @@ export class RegistroComponent implements OnInit {
       'required': 'El campo es obligatorio'
     },
     'celular': {
-      'required': 'El campo es obligatorio'
+      'required': 'El campo es obligatorio',
+      'maxlength': 'Cantidad maximo de digitos es 11'
+    },
+    'email': {
+      'required': 'El campo es obligatorio',
+      'email': 'Ingrese un email valido'
     },
     'direccion': {
       'required': 'El campo es obligatorio'
@@ -61,6 +72,7 @@ export class RegistroComponent implements OnInit {
     'apellidoPat': '',
     'apellidoMat': '',
     'celular': '',
+    'email': '',
     'direccion': '',
     'departamento': '',
     'provincia': '',
@@ -71,18 +83,23 @@ export class RegistroComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private router: Router,
     private datePipe: DatePipe,
+    private _snackbar: MatSnackBar,
+    public dialog: MatDialog,
+    private spinner: NgxSpinnerService,
     @Inject(RegistroService) private registroService: RegistroService,
     @Inject(UbigeoService) private ubigeoService: UbigeoService,
     @Inject(ValidationService) private validationService: ValidationService,
   ) { }
 
   ngOnInit() {
+    this.spinner.hide();
     this.formularioGrp = this.fb.group({
-      dni: ['', [Validators.required]],
-      nombre: ['', [Validators.required]],
+      dni: ['', [Validators.required, Validators.maxLength(8)]],
+      nombre: ['', [Validators.required, Validators.maxLength(8)]],
       apellidoPat: ['', [Validators.required]],
       apellidoMat: ['', [Validators.required]],
-      celular: ['', [Validators.required]],
+      celular: ['', [Validators.required, Validators.maxLength(11)]],
+      email: ['', [Validators.required, Validators.email]],
       direccion: ['', [Validators.required]],
       departamento: ['', [Validators.required]],
       provincia: ['', [Validators.required]],
@@ -92,6 +109,10 @@ export class RegistroComponent implements OnInit {
 
     this.formularioGrp.get('fechaInscripcion').setValue(new Date(this.datePipe.transform(new Date(), 'MM/dd/yyyy')));
     console.log(this.formularioGrp.get('fechaInscripcion').value);
+
+    this.formularioGrp.valueChanges.subscribe(val => {
+      this.validationService.getValidationErrors(this.formularioGrp, this.messages, this.formErrors, false);
+    });
 
     this.inicializarVariables();
   }
@@ -172,6 +193,7 @@ export class RegistroComponent implements OnInit {
 
   registrar() {
     if (this.formularioGrp.valid) {
+      this.spinner.show();
       this.inscripcion = {
         id: 0,
         dni: this.formularioGrp.get('dni').value,
@@ -179,6 +201,7 @@ export class RegistroComponent implements OnInit {
         apellidoPat: this.formularioGrp.get('apellidoPat').value,
         apellidoMat: this.formularioGrp.get('apellidoMat').value,
         celular: this.formularioGrp.get('celular').value,
+        email: this.formularioGrp.get('email').value,
         direccion: this.formularioGrp.get('direccion').value,
         idDepartamento: this.formularioGrp.get('departamento').value.id,
         idProvincia: this.formularioGrp.get('provincia').value.id,
@@ -190,6 +213,29 @@ export class RegistroComponent implements OnInit {
       };
 
       console.log(this.inscripcion);
+      this.registroService.registrarInscripcion(this.inscripcion).subscribe(
+        (data: ApiOutResponse) => {
+          console.log(data);
+          // this._snackbar.open('Ocurrio un error durante la inscripcion, vuelva a intentar mas tarde', null, { duration: 7000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['error-snackbar'] });
+          if (data.rCodigo == 1) {
+            this.spinner.hide();
+            const dialogRef = this.dialog.open(ConfirmacionComponent, {
+              width: '450px',
+              data: { title: 'CONFIRMACION DE INSCRIPCION', objeto: this.inscripcion }
+            });
+            dialogRef.afterClosed().subscribe(result => {
+              this.validationService.setAsUntoched(this.formularioGrp, this.formErrors, ['departamento', 'provincia', 'distrito', 'fechaInscripcion']);
+            });
+          } else {
+            this.spinner.hide();
+            this._snackbar.open('Ocurrio un error durante la inscripcion, vuelva a intentar mas tarde', null, { duration: 7000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['error-snackbar'] });
+          }
+        }, error => {
+          this.spinner.hide();
+          console.log(error);
+          this._snackbar.open('Ocurrio un error durante la inscripcion, vuelva a intentar mas tarde', null, { duration: 7000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['error-snackbar'] });
+        }
+      );
     } else {
       this.validationService.getValidationErrors(this.formularioGrp, this.messages, this.formErrors, true);
     }

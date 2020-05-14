@@ -17,12 +17,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpClientModule } from '@angular/common/http';
+import { OnlyNumbersDirective } from '../core/directives/only-numbers.directive';
 
 @NgModule({
   declarations: [
     ResponsiveRowsDirective,
     UppercaseDirective,
+    OnlyNumbersDirective,
   ],
   imports: [
     ReactiveFormsModule,
@@ -53,11 +56,12 @@ import { HttpClientModule } from '@angular/common/http';
     // MatProgressSpinnerModule,
     // MatBadgeModule,
     // MatStepperModule,
-    // MatSnackBarModule,
+    MatSnackBarModule,
   ],
   exports: [
     ResponsiveRowsDirective,
     UppercaseDirective,
+    OnlyNumbersDirective,
 
     ReactiveFormsModule,
     FlexLayoutModule,
@@ -86,7 +90,7 @@ import { HttpClientModule } from '@angular/common/http';
     // MatProgressSpinnerModule,
     // MatBadgeModule,
     // MatStepperModule,
-    // MatSnackBarModule,
+    MatSnackBarModule,
   ]
 })
 export class MaterialModule { }

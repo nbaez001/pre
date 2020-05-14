@@ -1,0 +1,17 @@
+<div class="page">
+    <mat-toolbar class="mat-primary mat-dialog-header">
+        <span>{{data.title}}</span>
+        <button tabindex="-1" mat-icon-button [mat-dialog-close]="null">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-toolbar>
+    <div mat-dialog-content>
+        <p>Usted se ha inscrito correctamente para el ciclo academico en la Academia Pre-Univeritaria <b>EL NAZARENO</b>
+        </p>
+        <h3>{{data.objeto.nombre}}, {{data.objeto.apellidoPat}} {{data.objeto.apellidoMat}}</h3>
+        <p>Pronto nos podremos en contacto con usted para mas detalles...</p>
+    </div>
+    <div mat-dialog-actions align="center">
+        <button mat-button [mat-dialog-close]="null" cdkFocusInitial>Aceptar</button>
+    </div>
+</div>

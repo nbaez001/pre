@@ -7,16 +7,23 @@ import { MaterialModule } from '../material.module';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { UbigeoService } from './services/ubigeo.service';
 import { RegistroService } from './services/registro.service';
-
+import { ConfirmacionComponent } from './components/registro/confirmacion/confirmacion.component';
+import { NgxSpinnerModule } from "ngx-spinner";
 
 @NgModule({
+  entryComponents: [
+    ConfirmacionComponent
+  ],
   declarations: [
-    RegistroComponent
+    ConfirmacionComponent,
+
+    RegistroComponent,
   ],
   imports: [
     CommonModule,
     InscripcionRoutingModule,
     MaterialModule,
+    NgxSpinnerModule,
   ],
   providers: [
     DatePipe,

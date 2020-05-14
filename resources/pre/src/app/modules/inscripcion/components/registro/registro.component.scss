@@ -23,12 +23,23 @@ mat-grid-tile {
 }
 
 ::ng-deep .login-card-header-image {
-    background-image: url("../../../../../assets/images/intranet/icons/icono-perficon.png");
+    background-image: url("../../../../../assets/images/intranet/icons/nazareno.png");
     background-size: cover;
-    height: 60px !important;
-    width: 60px !important;
+    height: 120px !important;
+    width: 242px !important;
 }
 
 mat-checkbox {
     padding-left: 10px;
+}
+
+::ng-deep mat-card-title {
+    div {
+        margin: 0 auto;
+    }
+}
+
+.mat-card-avatar{
+    border-radius: 1%;
+
 }

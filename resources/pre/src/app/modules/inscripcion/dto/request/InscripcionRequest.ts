@@ -5,6 +5,7 @@ export interface InscripcionRequest {
     apellidoPat: string;
     apellidoMat: string;
     celular: string;
+    email: string;
     direccion: string;
     idDepartamento: number;
     idProvincia: number;

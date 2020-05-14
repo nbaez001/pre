@@ -16,3 +16,5 @@ use Illuminate\Support\Facades\Route;
 Route::post('ubigeo/listarDepartamento', 'Generic\UbigeoController@listarDepartamento');
 Route::post('ubigeo/listarProvincia', 'Generic\UbigeoController@listarProvincia');
 Route::post('ubigeo/listarDistrito', 'Generic\UbigeoController@listarDistrito');
+
+Route::post('inscripcion/registrar', 'Inscripcion\RegistroController@registrar');
